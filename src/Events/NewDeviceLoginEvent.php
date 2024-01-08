@@ -4,7 +4,7 @@ namespace Rappasoft\LaravelAuthenticationLog\Events;
 
 use Illuminate\Queue\SerializesModels;
 
-class OrderCreatedEvent
+class NewDeviceLoginEvent
 {
     use SerializesModels;
 
