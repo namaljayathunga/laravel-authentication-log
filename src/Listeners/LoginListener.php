@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 use Rappasoft\LaravelAuthenticationLog\Events\NewDeviceLoginEvent;
+use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 
 class LoginListener
 {
@@ -20,13 +21,23 @@ class LoginListener
     public function handle($event): void
     {
         $listener = config('authentication-log.events.login', Login::class);
+
         if (! $event instanceof $listener) {
             return;
         }
 
         if ($event->user) {
+            if(! in_array(AuthenticationLoggable::class, class_uses_recursive(get_class($event->user)))) {
+                return;
+            }
+
+            if (config('authentication-log.behind_cdn')) {
+                $ip = $this->request->server(config('authentication-log.behind_cdn.http_header_field'));
+            } else {
+                $ip = $this->request->ip();
+            }
+
             $user = $event->user;
-            $ip = $this->request->ip();
             $userAgent = $this->request->userAgent();
             $known = $user->authentications()->whereIpAddress($ip)->whereUserAgent($userAgent)->whereLoginSuccessful(true)->first();
             $newUser = Carbon::parse($user->{$user->getCreatedAtColumn()})->diffInMinutes(Carbon::now()) < 1;
@@ -41,7 +52,7 @@ class LoginListener
 
             if (! $known && ! $newUser && config('authentication-log.notifications.new-device.enabled')) {
                 event(new NewDeviceLoginEvent($log, $user));
-                
+
                 // $newDevice = config('authentication-log.notifications.new-device.template') ?? NewDevice::class;
                 // $user->notify(new $newDevice($log));
             }
