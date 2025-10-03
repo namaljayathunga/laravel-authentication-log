@@ -5,8 +5,8 @@ namespace Rappasoft\LaravelAuthenticationLog\Listeners;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 use Rappasoft\LaravelAuthenticationLog\Events\NewDeviceLoginEvent;
+use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 
 class LoginListener
