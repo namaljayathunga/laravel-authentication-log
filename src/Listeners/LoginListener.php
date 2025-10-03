@@ -5,8 +5,8 @@ namespace Rappasoft\LaravelAuthenticationLog\Listeners;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 use Rappasoft\LaravelAuthenticationLog\Events\NewDeviceLoginEvent;
+use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 
 class LoginListener
 {
@@ -41,7 +41,7 @@ class LoginListener
 
             if (! $known && ! $newUser && config('authentication-log.notifications.new-device.enabled')) {
                 event(new NewDeviceLoginEvent($log, $user));
-                
+
                 // $newDevice = config('authentication-log.notifications.new-device.template') ?? NewDevice::class;
                 // $user->notify(new $newDevice($log));
             }
